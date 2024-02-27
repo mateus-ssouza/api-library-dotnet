@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using ApiBiblioteca.Domain.Enums;
+using System.Text.Json.Serialization;
 
 namespace ApiBiblioteca.Domain.Models
 {
@@ -20,7 +21,7 @@ namespace ApiBiblioteca.Domain.Models
 
         [Required]
         [DataType(DataType.Date)]
-        public DateOnly Birthday { get; set; }
+        public DateTime Birthday { get; set; }
 
         [Required]
         public UserType UserType { get; set; }
@@ -33,6 +34,7 @@ namespace ApiBiblioteca.Domain.Models
         [StringLength(45)]
         public string Password { get; set; }
 
+        [JsonIgnore]
         public ICollection<Loan> Loans { get; set; }
     }
 }

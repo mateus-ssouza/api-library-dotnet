@@ -1,5 +1,7 @@
 
+using ApiBiblioteca.Domain.Models.Interfaces;
 using ApiBiblioteca.Infra.Data;
+using ApiBiblioteca.Infra.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApiBiblioteca
@@ -14,6 +16,12 @@ namespace ApiBiblioteca
             builder.Configuration.AddJsonFile("env.json", optional: false, reloadOnChange: true);
 
             // Add services to the container.
+            // Dependency injection repositories
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IBookRepository, BookRepository>();
+            builder.Services.AddScoped<ILoanRepository, LoanRepository>();
+
+
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

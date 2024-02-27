@@ -13,17 +13,16 @@ namespace ApiBiblioteca.Domain.Models
 
         [Required]
         [DataType(DataType.Date)]
-        public DateOnly LoanDate { get; set; }
+        public DateTime LoanDate { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
-        public DateOnly ReturnDate { get; set; }
+        public DateTime ReturnDate { get; set; }
 
         [Required]
         public Status Status { get; set; }
 
         [Required]
-        [StringLength(45)]
         public double Fines { get; set; }
 
         [Required]
@@ -33,6 +32,7 @@ namespace ApiBiblioteca.Domain.Models
         [JsonIgnore]
         public User User { get; set; }
 
+        [JsonIgnore]
         public ICollection<BookLending> BookLendings { get; set; }
     }
 }

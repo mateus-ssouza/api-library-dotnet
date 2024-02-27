@@ -18,6 +18,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.3.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.3.1" />
   </ItemGroup>
@@ -27,10 +28,7 @@
     <Folder Include="Application\ViewModel\" />
     <Folder Include="Application\Validators\" />
     <Folder Include="Application\Services\" />
-    <Folder Include="Controllers\" />
     <Folder Include="Domain\DTOs\" />
-    <Folder Include="Domain\Models\Interfaces\" />
-    <Folder Include="Infra\Repositories\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

@@ -1,6 +1,8 @@
 ﻿using ApiBiblioteca.Domain.Models.Interfaces;
 using ApiBiblioteca.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using ApiBiblioteca.Application.Utils;
+using ApiBiblioteca.Application.ViewModel;
 
 namespace ApiBiblioteca.Controllers
 {
@@ -16,17 +18,19 @@ namespace ApiBiblioteca.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] Book model)
+        public async Task<IActionResult> Add([FromBody] BookViewModel viewModel)
         {
-            await _bookRepository.Add(model);
+            var book = CreateUtil.BookCreate(viewModel);
+            await _bookRepository.Add(book);
 
             return StatusCode(201, "Book registered successfully!");
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] Book model, Guid id)
+        public async Task<IActionResult> Update([FromBody] BookViewModel viewModel, Guid id)
         {
-            await _bookRepository.Update(id, model);
+            var book = CreateUtil.BookCreate(viewModel);
+            await _bookRepository.Update(id, book);
 
             return Ok("Book updated successfully!");
         }

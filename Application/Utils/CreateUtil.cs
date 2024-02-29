@@ -14,7 +14,15 @@ namespace ApiBiblioteca.Application.Utils
                 Birthday = viewModel.Birthday,
                 UserType = viewModel.UserType,
                 Email = viewModel.Email,
-                Password = viewModel.Password
+                Password = viewModel.Password,
+                Address = new()
+                {
+                    Street = viewModel.Street,
+                    Number = viewModel.Number,
+                    Complement = viewModel.Complement,
+                    City = viewModel.City,
+                    State = viewModel.State
+                }
             };
 
             return user;
@@ -41,7 +49,11 @@ namespace ApiBiblioteca.Application.Utils
             {
                 LoanDate = viewModel.LoanDate,
                 ReturnDate = viewModel.ReturnDate,
-                Status = viewModel.Status
+                Status = viewModel.Status,
+                BookLendings = viewModel.Books.Select(bookId =>
+                {
+                    return new BookLending { BookId = bookId };
+                }).ToList()
             };
 
             return loan;

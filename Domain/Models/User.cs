@@ -34,6 +34,8 @@ namespace ApiBiblioteca.Domain.Models
         [StringLength(45)]
         public string Password { get; set; }
 
+        public Address Address { get; set; }
+
         [JsonIgnore]
         public ICollection<Loan> Loans { get; set; }
     }

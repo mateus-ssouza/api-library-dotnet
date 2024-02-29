@@ -1,8 +1,9 @@
 ﻿using ApiBiblioteca.Domain.Models.Interfaces;
-using ApiBiblioteca.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using ApiBiblioteca.Application.Utils;
 using ApiBiblioteca.Application.ViewModel;
+using ApiBiblioteca.Infra.Repositories;
+using ApiBiblioteca.Domain.Models;
 
 namespace ApiBiblioteca.Controllers
 {
@@ -17,11 +18,27 @@ namespace ApiBiblioteca.Controllers
             _loanRepository = loanRepository;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var loans = await _loanRepository.GetAll();
+
+            return Ok(loans);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var loan = await _loanRepository.GetById(id);
+
+            return loan == null ? NotFound("Book not found!") : Ok(loan);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] LoanViewModel viewModel)
         {
             var loan = CreateUtil.LoanCreate(viewModel);
-            loan.UserId = Guid.Parse("C48049BF-655F-4BE0-FDCF-08DC37D4B025");
+            loan.UserId = Guid.Parse("6D271B17-7628-4B5B-6609-08DC391F9DCF");
             await _loanRepository.Add(loan);
 
             return StatusCode(201, "Loan registered successfully!");

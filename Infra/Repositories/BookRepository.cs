@@ -1,6 +1,7 @@
 ﻿using ApiBiblioteca.Domain.Models;
 using ApiBiblioteca.Domain.Models.Interfaces;
 using ApiBiblioteca.Infra.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiBiblioteca.Infra.Repositories
 {
@@ -13,6 +14,16 @@ namespace ApiBiblioteca.Infra.Repositories
             _db = db;
         }
 
+        public async Task<ICollection<Book>> GetAll()
+        {
+            return await _db.Books.ToListAsync();
+        }
+
+        public async Task<Book> GetById(Guid id)
+        {
+            return await _db.Books.FirstOrDefaultAsync(b => b.Id == id);
+        }
+
         public async Task Add(Book model)
         {
             await _db.Books.AddAsync(model);
@@ -21,8 +32,22 @@ namespace ApiBiblioteca.Infra.Repositories
 
         public async Task Update(Guid id, Book model)
         {
-            _db.Books.Update(model);
-            await _db.SaveChangesAsync();
+            if (!BookExists(id))
+            {
+                // Book not found
+                throw new InvalidOperationException("Book not found");
+            }
+            else
+            {
+                var bookUpdate = await GetById(id);
+                bookUpdate.Title = model.Title;
+                bookUpdate.Author = model.Author;
+                bookUpdate.ISBN = model.ISBN;
+                bookUpdate.CopyCode = model.CopyCode;
+
+                _db.Books.Update(bookUpdate);
+                await _db.SaveChangesAsync();
+            }
         }
 
         public async Task Delete(Guid id)
@@ -34,7 +59,7 @@ namespace ApiBiblioteca.Infra.Repositories
 
         private bool BookExists(Guid id)
         {
-            return _db.Users.Any(e => e.Id == id);
+            return _db.Books.Any(e => e.Id == id);
         }
     }
 }

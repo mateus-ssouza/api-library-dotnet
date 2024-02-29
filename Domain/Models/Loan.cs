@@ -29,10 +29,8 @@ namespace ApiBiblioteca.Domain.Models
         [ForeignKey("User")]
         public Guid UserId { get; set; }
 
-        [JsonIgnore]
         public User User { get; set; }
 
-        [JsonIgnore]
         public ICollection<BookLending> BookLendings { get; set; }
     }
 }

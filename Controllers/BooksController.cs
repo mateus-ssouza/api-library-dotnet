@@ -1,8 +1,8 @@
 ﻿using ApiBiblioteca.Domain.Models.Interfaces;
-using ApiBiblioteca.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using ApiBiblioteca.Application.Utils;
 using ApiBiblioteca.Application.ViewModel;
+using ApiBiblioteca.Infra.Repositories;
 
 namespace ApiBiblioteca.Controllers
 {
@@ -15,6 +15,22 @@ namespace ApiBiblioteca.Controllers
         public BooksController(IBookRepository bookRepository)
         {
             _bookRepository = bookRepository;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var books = await _bookRepository.GetAll();
+
+            return Ok(books);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var book = await _bookRepository.GetById(id);
+
+            return book == null ? NotFound("Book not found!") : Ok(book);
         }
 
         [HttpPost]

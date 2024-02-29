@@ -2,6 +2,7 @@
 using ApiBiblioteca.Domain.Models.Interfaces;
 using ApiBiblioteca.Application.Utils;
 using ApiBiblioteca.Application.ViewModel;
+using ApiBiblioteca.Domain.Models;
 
 namespace ApiBiblioteca.Controllers
 {
@@ -10,10 +11,27 @@ namespace ApiBiblioteca.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+  
 
         public UsersController(IUserRepository userRepository)
         {
             _userRepository = userRepository;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var users = await _userRepository.GetAll();
+
+            return Ok(users);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var user = await _userRepository.GetById(id);
+
+            return user == null ? NotFound("User not found!") : Ok(user);
         }
 
         [HttpPost]

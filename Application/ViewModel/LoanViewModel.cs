@@ -7,5 +7,6 @@ namespace ApiBiblioteca.Application.ViewModel
         public DateTime LoanDate { get; set; }
         public DateTime ReturnDate { get; set; }
         public Status Status { get; set; }
+        public ICollection<Guid> Books { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ApiBiblioteca.Domain.Models;
 using ApiBiblioteca.Domain.Models.Interfaces;
 using ApiBiblioteca.Infra.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiBiblioteca.Infra.Repositories
 {
@@ -13,6 +14,24 @@ namespace ApiBiblioteca.Infra.Repositories
             _db = db;
         }
 
+        public async Task<ICollection<Loan>> GetAll()
+        {
+            return await _db.Loans
+                .Include(l => l.User)
+                .Include(bl => bl.BookLendings)
+                .ThenInclude(bl => bl.Book)
+                .ToListAsync();
+        }
+
+        public async Task<Loan> GetById(Guid id)
+        {
+            return await _db.Loans
+                .Include(l => l.User)
+                .Include(bl => bl.BookLendings)
+                .ThenInclude(bl => bl.Book)
+                .FirstOrDefaultAsync(l => l.Id == id);
+        }
+
         public async Task Add(Loan model)
         {
             await _db.Loans.AddAsync(model);
@@ -21,8 +40,22 @@ namespace ApiBiblioteca.Infra.Repositories
 
         public async Task Update(Guid id, Loan model)
         {
-            _db.Loans.Update(model);
-            await _db.SaveChangesAsync();
+            if (!LoanExists(id))
+            {
+                // Loan not found
+                throw new InvalidOperationException("Loan not found");
+            }
+            else
+            {
+                var loanUpdate = await GetById(id);
+                loanUpdate.LoanDate = model.LoanDate;
+                loanUpdate.ReturnDate = model.ReturnDate;
+                loanUpdate.Status = model.Status;
+                loanUpdate.BookLendings = model.BookLendings;
+
+                _db.Loans.Update(loanUpdate);
+                await _db.SaveChangesAsync();
+            }
         }
 
         public async Task Delete(Guid id)
@@ -31,9 +64,10 @@ namespace ApiBiblioteca.Infra.Repositories
             _db.Loans.Remove(loan!);
             await _db.SaveChangesAsync();
         }
+
         private bool LoanExists(Guid id)
         {
-            return _db.Users.Any(e => e.Id == id);
+            return _db.Loans.Any(e => e.Id == id);
         }
     }
 }

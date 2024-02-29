@@ -5,5 +5,7 @@
         Task Add(User model);
         Task Update(Guid id, User model);
         Task Delete(Guid id);
+        Task<ICollection<User>> GetAll();
+        Task<User> GetById(Guid id);
     }
 }

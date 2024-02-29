@@ -58,10 +58,9 @@ namespace ApiBiblioteca.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
-                    b.ToTable("Addresses");
+                    b.ToTable("Addresses", (string)null);
                 });
 
             modelBuilder.Entity("ApiBiblioteca.Domain.Models.Book", b =>
@@ -85,9 +84,6 @@ namespace ApiBiblioteca.Migrations
                         .HasMaxLength(45)
                         .HasColumnType("nvarchar(45)");
 
-                    b.Property<Guid?>("LoanId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -95,9 +91,7 @@ namespace ApiBiblioteca.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LoanId");
-
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
             modelBuilder.Entity("ApiBiblioteca.Domain.Models.BookLending", b =>
@@ -112,7 +106,7 @@ namespace ApiBiblioteca.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.ToTable("BookLendings");
+                    b.ToTable("BookLendings", (string)null);
                 });
 
             modelBuilder.Entity("ApiBiblioteca.Domain.Models.Loan", b =>
@@ -140,7 +134,7 @@ namespace ApiBiblioteca.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Loans");
+                    b.ToTable("Loans", (string)null);
                 });
 
             modelBuilder.Entity("ApiBiblioteca.Domain.Models.User", b =>
@@ -177,25 +171,18 @@ namespace ApiBiblioteca.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("ApiBiblioteca.Domain.Models.Address", b =>
                 {
                     b.HasOne("ApiBiblioteca.Domain.Models.User", "User")
-                        .WithOne("Address")
-                        .HasForeignKey("ApiBiblioteca.Domain.Models.Address", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ApiBiblioteca.Domain.Models.Book", b =>
-                {
-                    b.HasOne("ApiBiblioteca.Domain.Models.Loan", null)
-                        .WithMany("Books")
-                        .HasForeignKey("LoanId");
                 });
 
             modelBuilder.Entity("ApiBiblioteca.Domain.Models.BookLending", b =>
@@ -207,7 +194,7 @@ namespace ApiBiblioteca.Migrations
                         .IsRequired();
 
                     b.HasOne("ApiBiblioteca.Domain.Models.Loan", "Loan")
-                        .WithMany()
+                        .WithMany("BookLendings")
                         .HasForeignKey("LoanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -235,14 +222,11 @@ namespace ApiBiblioteca.Migrations
 
             modelBuilder.Entity("ApiBiblioteca.Domain.Models.Loan", b =>
                 {
-                    b.Navigation("Books");
+                    b.Navigation("BookLendings");
                 });
 
             modelBuilder.Entity("ApiBiblioteca.Domain.Models.User", b =>
                 {
-                    b.Navigation("Address")
-                        .IsRequired();
-
                     b.Navigation("Loans");
                 });
 #pragma warning restore 612, 618

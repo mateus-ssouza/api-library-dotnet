@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using ApiBiblioteca.Application.Utils;
 using ApiBiblioteca.Application.ViewModel;
-using ApiBiblioteca.Infra.Repositories;
+using AutoMapper;
+using ApiBiblioteca.Domain.DTOs;
 using ApiBiblioteca.Domain.Models;
 
 namespace ApiBiblioteca.Controllers
@@ -12,26 +13,30 @@ namespace ApiBiblioteca.Controllers
     public class LoansController : ControllerBase
     {
         private readonly ILoanRepository _loanRepository;
+        private readonly IMapper _mapper;
 
-        public LoansController(ILoanRepository loanRepository)
+        public LoansController(ILoanRepository loanRepository, IMapper mapper)
         {
             _loanRepository = loanRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var loans = await _loanRepository.GetAll();
+            var loansDTO = loans.Select(l => _mapper.Map<LoanDTO>(l));
 
-            return Ok(loans);
+            return Ok(loansDTO);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
             var loan = await _loanRepository.GetById(id);
+            var loanDTO = _mapper.Map<LoanDTO>(loan);
 
-            return loan == null ? NotFound("Book not found!") : Ok(loan);
+            return loanDTO == null ? NotFound("Book not found!") : Ok(loanDTO);
         }
 
         [HttpPost]

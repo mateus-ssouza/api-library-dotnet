@@ -1,4 +1,5 @@
 
+using ApiBiblioteca.Application.Mapping;
 using ApiBiblioteca.Domain.Models.Interfaces;
 using ApiBiblioteca.Infra.Data;
 using ApiBiblioteca.Infra.Repositories;
@@ -21,6 +22,8 @@ namespace ApiBiblioteca
             builder.Services.AddScoped<IBookRepository, BookRepository>();
             builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 
+            // Dependency injection AutoMapper
+            builder.Services.AddAutoMapper(typeof(DomainToDTOMapping));
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();

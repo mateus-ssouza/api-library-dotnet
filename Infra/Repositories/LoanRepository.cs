@@ -19,7 +19,8 @@ namespace ApiBiblioteca.Infra.Repositories
             return await _db.Loans
                 .Include(l => l.User)
                 .Include(bl => bl.BookLendings)
-                .ThenInclude(bl => bl.Book)
+                .ThenInclude(bl => bl.Copy)
+                .ThenInclude(c => c.Book)
                 .ToListAsync();
         }
 
@@ -28,7 +29,8 @@ namespace ApiBiblioteca.Infra.Repositories
             return await _db.Loans
                 .Include(l => l.User)
                 .Include(bl => bl.BookLendings)
-                .ThenInclude(bl => bl.Book)
+                .ThenInclude(bl => bl.Copy)
+                .ThenInclude(c => c.Book)
                 .FirstOrDefaultAsync(l => l.Id == id);
         }
 

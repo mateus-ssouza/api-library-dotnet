@@ -43,7 +43,6 @@ namespace ApiBiblioteca.Infra.Repositories
                 bookUpdate.Title = model.Title;
                 bookUpdate.Author = model.Author;
                 bookUpdate.ISBN = model.ISBN;
-                bookUpdate.CopyCode = model.CopyCode;
 
                 _db.Books.Update(bookUpdate);
                 await _db.SaveChangesAsync();

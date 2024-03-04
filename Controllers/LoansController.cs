@@ -43,7 +43,7 @@ namespace ApiBiblioteca.Controllers
         public async Task<IActionResult> Add([FromBody] LoanViewModel viewModel)
         {
             var loan = CreateUtil.LoanCreate(viewModel);
-            loan.UserId = Guid.Parse("6D271B17-7628-4B5B-6609-08DC391F9DCF");
+            loan.UserId = Guid.Parse("4DFC2E71-4C5B-490F-509C-08DC3C4E200D");
             await _loanRepository.Add(loan);
 
             return StatusCode(201, "Loan registered successfully!");

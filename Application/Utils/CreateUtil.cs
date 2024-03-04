@@ -13,9 +13,9 @@ namespace ApiBiblioteca.Application.Utils
                 LoanDate = viewModel.LoanDate,
                 ReturnDate = viewModel.ReturnDate,
                 Status = viewModel.Status,
-                BookLendings = viewModel.Books.Select(bookId =>
+                BookLendings = viewModel.Books.Select(copyId =>
                 {
-                    return new BookLending { BookId = bookId };
+                    return new BookLending { CopyId = copyId };
                 }).ToList()
             };
 

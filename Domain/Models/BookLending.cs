@@ -8,7 +8,7 @@ namespace ApiBiblioteca.Domain.Models
         [JsonIgnore]
         public Loan Loan { get; set; }
 
-        public Guid BookId { get; set; }
-        public Book Book { get; set; }
+        public Guid CopyId { get; set; }
+        public Copy Copy { get; set; }
     }
 }

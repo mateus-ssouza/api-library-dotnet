@@ -15,13 +15,14 @@ namespace ApiBiblioteca.Infra.Data
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Loan> Loans { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Copy> Copies { get; set; }
         public DbSet<BookLending> BookLendings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Configuring the composite primary key for the BookLending join class
             modelBuilder.Entity<BookLending>()
-                .HasKey(bl => new { bl.LoanId, bl.BookId });
+                .HasKey(bl => new { bl.LoanId, bl.CopyId });
 
             // Configuring Many-to-Many Relationships
             modelBuilder.Entity<BookLending>()
@@ -30,9 +31,9 @@ namespace ApiBiblioteca.Infra.Data
                 .HasForeignKey(bl => bl.LoanId);
 
             modelBuilder.Entity<BookLending>()
-                .HasOne(bl => bl.Book)
+                .HasOne(bl => bl.Copy)
                 .WithMany(b => b.BookLendings)
-                .HasForeignKey(bl => bl.BookId);
+                .HasForeignKey(bl => bl.CopyId);
         }
     }
 }

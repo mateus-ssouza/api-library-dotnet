@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace ApiBiblioteca.Domain.Models
 {
-    public class Book
+    public class Copy
     {
 
         [Key]
@@ -12,18 +12,20 @@ namespace ApiBiblioteca.Domain.Models
         public Guid Id { get; set; }
 
         [Required]
-        [StringLength(30)]
-        public string Title { get; set; }
+        [StringLength(45)]
+        public string CopyCode { get; set; }
 
         [Required]
-        [StringLength(45)]
-        public string Author { get; set; }
+        public bool Available { get; set; } = true;
 
         [Required]
-        [StringLength(45)]
-        public string ISBN { get; set; }
+        [ForeignKey("Book")]
+        public Guid BookId { get; set; }
 
         [JsonIgnore]
-        public ICollection<Copy> Copies { get; set; }
+        public Book Book { get; set; }
+
+        [JsonIgnore]
+        public ICollection<BookLending> BookLendings { get; set; }
     }
 }

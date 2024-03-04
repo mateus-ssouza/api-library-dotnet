@@ -20,6 +20,7 @@ namespace ApiBiblioteca
             // Dependency injection repositories
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IBookRepository, BookRepository>();
+            builder.Services.AddScoped<ICopyRepository, CopyRepository>();
             builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 
             // Dependency injection AutoMapper

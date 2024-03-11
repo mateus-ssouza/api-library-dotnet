@@ -1,9 +1,7 @@
-﻿using ApiBiblioteca.Domain.Enums;
-using ApiBiblioteca.Domain.Models;
+﻿using ApiBiblioteca.Domain.Models;
 using ApiBiblioteca.Domain.Models.Interfaces;
 using ApiBiblioteca.Infra.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace ApiBiblioteca.Infra.Repositories
 {
@@ -28,6 +26,13 @@ namespace ApiBiblioteca.Infra.Repositories
             return await _db.Users
                 .Include(u => u.Address)
                 .FirstOrDefaultAsync(u => u.Id == id);
+        }
+
+        public async Task<User> GetByEmail(string email)
+        {
+            return await _db.Users
+                .Include(u => u.Address)
+                .FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task Add(User model)

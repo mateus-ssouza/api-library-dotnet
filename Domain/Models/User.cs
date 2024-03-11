@@ -31,7 +31,7 @@ namespace ApiBiblioteca.Domain.Models
         public string Email { get; set; }
 
         [Required]
-        [StringLength(45)]
+        [StringLength(90)]
         public string Password { get; set; }
 
         public Address Address { get; set; }

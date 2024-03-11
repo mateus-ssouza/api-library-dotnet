@@ -1,9 +1,14 @@
 
 using ApiBiblioteca.Application.Mapping;
+using ApiBiblioteca.Application.Services;
 using ApiBiblioteca.Domain.Models.Interfaces;
 using ApiBiblioteca.Infra.Data;
 using ApiBiblioteca.Infra.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 
 namespace ApiBiblioteca
 {
@@ -23,13 +28,62 @@ namespace ApiBiblioteca
             builder.Services.AddScoped<ICopyRepository, CopyRepository>();
             builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 
+            // Dependency injection services
+            builder.Services.AddScoped<TokenService>();
+
             // Dependency injection AutoMapper
             builder.Services.AddAutoMapper(typeof(DomainToDTOMapping));
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            // Configuring to allow using the token in Swagger
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
 
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header
+                        },
+                        new List<string>()
+                    }
+                });
+            });
+
+            // Jwt configuration
+            var key = Encoding.ASCII.GetBytes(builder.Configuration["SecretKey"]);
+            builder.Services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                };
+            });
 
             // Configuration for connecting to the database.
             builder.Services.AddDbContext<Context>(
@@ -49,7 +103,6 @@ namespace ApiBiblioteca
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

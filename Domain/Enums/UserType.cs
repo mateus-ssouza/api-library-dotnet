@@ -2,7 +2,7 @@
 {
     public enum UserType
     {
-        ADM,
-        CLIENT
+        ADM = 1,
+        CLIENT = 2
     }
 }

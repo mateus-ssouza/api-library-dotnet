@@ -12,5 +12,4 @@ namespace ApiBiblioteca.Application.ViewModel
         public string Password { get; set; }
         public AddressViewModel Address { get; set; }
     }
-
 }

@@ -2,8 +2,8 @@
 {
     public enum Status
     {
-        Requested,
-        InProgress,
-        Finished
+        Requested = 1,
+        InProgress = 2,
+        Finished = 3
     }
 }

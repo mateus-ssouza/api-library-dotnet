@@ -4,11 +4,14 @@ using ApiBiblioteca.Application.Services;
 using ApiBiblioteca.Domain.Models.Interfaces;
 using ApiBiblioteca.Infra.Data;
 using ApiBiblioteca.Infra.Repositories;
+using FluentValidation.AspNetCore;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using ApiBiblioteca.Application.Validators;
 
 namespace ApiBiblioteca
 {
@@ -20,6 +23,10 @@ namespace ApiBiblioteca
 
             // Configuration to use a file with the connection string
             builder.Configuration.AddJsonFile("env.json", optional: false, reloadOnChange: true);
+
+            
+            builder.Services.AddValidatorsFromAssemblyContaining<LoginUserValidator>();
+            builder.Services.AddFluentValidationAutoValidation();
 
             // Add services to the container.
             // Dependency injection repositories

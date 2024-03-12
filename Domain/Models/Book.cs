@@ -12,11 +12,11 @@ namespace ApiBiblioteca.Domain.Models
         public Guid Id { get; set; }
 
         [Required]
-        [StringLength(30)]
+        [StringLength(80)]
         public string Title { get; set; }
 
         [Required]
-        [StringLength(45)]
+        [StringLength(60)]
         public string Author { get; set; }
 
         [Required]

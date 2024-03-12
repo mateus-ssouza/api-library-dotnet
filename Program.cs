@@ -24,8 +24,9 @@ namespace ApiBiblioteca
             // Configuration to use a file with the connection string
             builder.Configuration.AddJsonFile("env.json", optional: false, reloadOnChange: true);
 
-            
             builder.Services.AddValidatorsFromAssemblyContaining<LoginUserValidator>();
+            builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateBookValidator>();
             builder.Services.AddFluentValidationAutoValidation();
 
             // Add services to the container.
@@ -91,6 +92,13 @@ namespace ApiBiblioteca
                     ValidateAudience = false,
                 };
             });
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy => policy.RequireClaim("userType", "ADM"));
+                options.AddPolicy("Client", policy => policy.RequireClaim("userType", "CLIENT"));
+            });
+
 
             // Configuration for connecting to the database.
             builder.Services.AddDbContext<Context>(

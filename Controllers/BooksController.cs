@@ -4,9 +4,11 @@ using ApiBiblioteca.Application.ViewModel;
 using AutoMapper;
 using ApiBiblioteca.Domain.DTOs;
 using ApiBiblioteca.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiBiblioteca.Controllers
 {
+    [Authorize]
     [Route("api/v1/books")]
     [ApiController]
     public class BooksController : ControllerBase
@@ -38,6 +40,7 @@ namespace ApiBiblioteca.Controllers
             return bookDTO == null ? NotFound("Book not found!") : Ok(bookDTO);
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] BookViewModel viewModel)
         {
@@ -47,18 +50,26 @@ namespace ApiBiblioteca.Controllers
             return StatusCode(201, "Book registered successfully!");
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromBody] BookViewModel viewModel, Guid id)
         {
+            var bookExists = await _bookRepository.GetById(id);
+            if (bookExists == null) return NotFound("Book not found!");
+
             var book = _mapper.Map<Book>(viewModel);
             await _bookRepository.Update(id, book);
 
             return Ok("Book updated successfully!");
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
+            var bookExists = await _bookRepository.GetById(id);
+            if (bookExists == null) return NotFound("Book not found!");
+
             await _bookRepository.Delete(id);
 
             return Ok("Book removed successfully!");

@@ -16,32 +16,48 @@ namespace ApiBiblioteca.Infra.Repositories
 
         public async Task<ICollection<Copy>> GetAll()
         {
-            return await _db.Copies
+            try
+            {
+                return await _db.Copies
                 .Include(b => b.Book)
                 .ToListAsync();
+            }
+            catch (Exception) { throw; }
         }
 
         public async Task<Copy> GetById(Guid id)
         {
-            return await _db.Copies
+            try
+            {
+                return await _db.Copies
                 .Include(b => b.Book)
-                .FirstOrDefaultAsync(b => b.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == id);
+            }
+            catch (Exception) { throw; }   
+        }
+
+        public async Task<bool> IsRegisteredCopyCode(string copyCode)
+        {
+            try
+            {
+                return await _db.Copies.AnyAsync(c => c.CopyCode == copyCode);
+            }
+            catch (Exception) { throw; }
         }
 
         public async Task Add(Copy model)
         {
-            await _db.Copies.AddAsync(model);
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.Copies.AddAsync(model);
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception) { throw; }  
         }
 
         public async Task Update(Guid id, Copy model)
         {
-            if (!CopyExists(id))
-            {
-                // Copy not found
-                throw new InvalidOperationException("Copy not found");
-            }
-            else
+            try
             {
                 var copyUpdate = await GetById(id);
                 copyUpdate.CopyCode = model.CopyCode;
@@ -50,24 +66,18 @@ namespace ApiBiblioteca.Infra.Repositories
                 _db.Copies.Update(copyUpdate);
                 await _db.SaveChangesAsync();
             }
+            catch (Exception) { throw; }
         }
 
         public async Task Delete(Guid id)
         {
-            if (!CopyExists(id))
+            try
             {
-                // Copy not found
-                throw new InvalidOperationException("Copy not found");
+                var copy = await _db.Copies.FindAsync(id);
+                _db.Copies.Remove(copy!);
+                await _db.SaveChangesAsync();
             }
-
-            var copy = await _db.Copies.FindAsync(id);
-            _db.Copies.Remove(copy!);
-            await _db.SaveChangesAsync();
-        }
-
-        private bool CopyExists(Guid id)
-        {
-            return _db.Copies.Any(e => e.Id == id);
+            catch (Exception) { throw; }
         }
     }
 }

@@ -6,6 +6,7 @@ using ApiBiblioteca.Domain.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ApiBiblioteca.Infra.Repositories;
 
 namespace ApiBiblioteca.Controllers
 {
@@ -27,13 +28,9 @@ namespace ApiBiblioteca.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserViewModel viewModel)
         {
-
-            // Check if the email is already in use
-            if (await _userRepository.GetByEmail(viewModel.Email) != null)
-            {
-                return BadRequest("This email is already in use.");
-            }
-
+            var isRegisteredEmail = await _userRepository.IsRegisteredEmail(viewModel.Email);
+            if (isRegisteredEmail) return BadRequest("This email is already in use.");
+            
             var user = _mapper.Map<User>(viewModel);
             var passwordHash = CryptographyService.Encrypt(viewModel.Password);
             user.Password = passwordHash;
@@ -49,10 +46,7 @@ namespace ApiBiblioteca.Controllers
 
             var user = await _userRepository.GetByEmail(viewModel.Email);
 
-            if (user == null)
-            {
-                return NotFound("This email is not registered!");
-            }
+            if (user == null) return NotFound("This email is not registered!");
 
             if (CryptographyService.Verify(viewModel.Password, user.Password))
             {

@@ -7,5 +7,6 @@
         Task Delete(Guid id);
         Task<ICollection<Copy>> GetAll();
         Task<Copy> GetById(Guid id);
+        Task<bool> IsRegisteredCopyCode(string copyCode);
     }
 }

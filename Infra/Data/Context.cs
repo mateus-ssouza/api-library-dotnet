@@ -34,6 +34,10 @@ namespace ApiBiblioteca.Infra.Data
                 .HasOne(bl => bl.Copy)
                 .WithMany(b => b.BookLendings)
                 .HasForeignKey(bl => bl.CopyId);
+
+            // Leave the copyCode attribute unique
+            modelBuilder.Entity<Copy>()
+                .HasIndex(c => c.CopyCode).IsUnique();
         }
     }
 }

@@ -28,6 +28,7 @@ namespace ApiBiblioteca
             builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
             builder.Services.AddValidatorsFromAssemblyContaining<CreateBookValidator>();
             builder.Services.AddValidatorsFromAssemblyContaining<CreateCopyValidator>();
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateLoanValidator>();
             builder.Services.AddFluentValidationAutoValidation();
 
             // Add services to the container.

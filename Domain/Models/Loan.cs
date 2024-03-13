@@ -1,7 +1,6 @@
 ﻿using ApiBiblioteca.Domain.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace ApiBiblioteca.Domain.Models
 {

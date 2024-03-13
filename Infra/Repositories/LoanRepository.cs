@@ -16,38 +16,59 @@ namespace ApiBiblioteca.Infra.Repositories
 
         public async Task<ICollection<Loan>> GetAll()
         {
-            return await _db.Loans
+            try
+            {
+                return await _db.Loans
                 .Include(l => l.User)
                 .Include(bl => bl.BookLendings)
                 .ThenInclude(bl => bl.Copy)
                 .ThenInclude(c => c.Book)
                 .ToListAsync();
+            }
+            catch (Exception) { throw; }
         }
 
         public async Task<Loan> GetById(Guid id)
         {
-            return await _db.Loans
+            try
+            {
+                return await _db.Loans
                 .Include(l => l.User)
                 .Include(bl => bl.BookLendings)
                 .ThenInclude(bl => bl.Copy)
                 .ThenInclude(c => c.Book)
                 .FirstOrDefaultAsync(l => l.Id == id);
+            }
+            catch (Exception) { throw; }   
         }
 
         public async Task Add(Loan model)
         {
-            await _db.Loans.AddAsync(model);
-            await _db.SaveChangesAsync();
+            using var transaction = _db.Database.BeginTransaction();
+            try
+            {
+                foreach (var copyLoan in model.BookLendings)
+                {
+                    var copy = await _db.Copies.FirstOrDefaultAsync(c => c.Id == copyLoan.CopyId && c.Available);
+
+                    if (copy != null) copy.Available = false;
+                    else throw new InvalidOperationException($"The copy with ID '{copyLoan.CopyId}' is not available for loan.");
+                }
+
+                _db.Loans.Add(model);
+                await _db.SaveChangesAsync();
+                transaction.Commit();
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
 
         public async Task Update(Guid id, Loan model)
         {
-            if (!LoanExists(id))
-            {
-                // Loan not found
-                throw new InvalidOperationException("Loan not found");
-            }
-            else
+            try
             {
                 var loanUpdate = await GetById(id);
                 loanUpdate.LoanDate = model.LoanDate;
@@ -58,18 +79,18 @@ namespace ApiBiblioteca.Infra.Repositories
                 _db.Loans.Update(loanUpdate);
                 await _db.SaveChangesAsync();
             }
+            catch (Exception) { throw; }
         }
 
         public async Task Delete(Guid id)
         {
-            var loan = await _db.Loans.FindAsync(id);
-            _db.Loans.Remove(loan!);
-            await _db.SaveChangesAsync();
-        }
-
-        private bool LoanExists(Guid id)
-        {
-            return _db.Loans.Any(e => e.Id == id);
+            try
+            {
+                var loan = await _db.Loans.FindAsync(id);
+                _db.Loans.Remove(loan!);
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception) { throw; }
         }
     }
 }

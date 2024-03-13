@@ -9,7 +9,7 @@ namespace ApiBiblioteca.Application.Validators
         {
             RuleFor(u => u.Name)
                 .NotEmpty().WithMessage("Name is required")
-                .Length(3, 45).WithMessage("Name must be between 3 and 45 characters ");
+                .Length(3, 45).WithMessage("Name must be between 3 and 45 characters");
 
             RuleFor(u => u.Cpf)
                 .NotEmpty().WithMessage("Cpf is required")
@@ -30,13 +30,13 @@ namespace ApiBiblioteca.Application.Validators
 
             RuleFor(u => u.Password)
                 .NotEmpty().WithMessage("Password is required")
-                .Length(4, 90).WithMessage("Password must be between 4 and 90 characters ");
+                .Length(4, 90).WithMessage("Password must be between 4 and 90 characters");
 
             When(u => u.Address != null, () =>
             {
                 RuleFor(u => u.Address.Street)
                     .NotEmpty().WithMessage("Street is required")
-                    .Length(3, 60).WithMessage("Street must be between 3 and 60 characters ");
+                    .Length(3, 60).WithMessage("Street must be between 3 and 60 characters");
 
                 RuleFor(u => u.Address.Number)
                     .NotEmpty().WithMessage("Number is required")
@@ -44,11 +44,11 @@ namespace ApiBiblioteca.Application.Validators
 
                 RuleFor(u => u.Address.Complement)
                     .NotEmpty().WithMessage("Complement is required")
-                    .Length(3, 60).WithMessage("Complement must be between 3 and 60 characters ");
+                    .Length(3, 60).WithMessage("Complement must be between 3 and 60 characters");
 
                 RuleFor(u => u.Address.City)
                     .NotEmpty().WithMessage("State is required")
-                    .Length(3, 40).WithMessage("City must be between 3 and 40 characters ");
+                    .Length(3, 40).WithMessage("City must be between 3 and 40 characters");
 
                 RuleFor(u => u.Address.State)
                     .NotEmpty().WithMessage("State is required")

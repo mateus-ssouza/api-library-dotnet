@@ -4,9 +4,7 @@ using ApiBiblioteca.Domain.DTOs;
 using ApiBiblioteca.Domain.Models.Interfaces;
 using ApiBiblioteca.Domain.Models;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ApiBiblioteca.Infra.Repositories;
 
 namespace ApiBiblioteca.Controllers
 {

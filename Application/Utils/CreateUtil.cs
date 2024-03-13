@@ -1,4 +1,5 @@
 ﻿using ApiBiblioteca.Application.ViewModel;
+using ApiBiblioteca.Domain.Enums;
 using ApiBiblioteca.Domain.Models;
 
 namespace ApiBiblioteca.Application.Utils
@@ -12,7 +13,7 @@ namespace ApiBiblioteca.Application.Utils
             {
                 LoanDate = viewModel.LoanDate,
                 ReturnDate = viewModel.ReturnDate,
-                Status = viewModel.Status,
+                Status = Status.Requested,
                 BookLendings = viewModel.Books.Select(copyId =>
                 {
                     return new BookLending { CopyId = copyId };

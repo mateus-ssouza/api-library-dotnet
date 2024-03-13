@@ -2,7 +2,6 @@
 using ApiBiblioteca.Domain.Models.Interfaces;
 using ApiBiblioteca.Infra.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace ApiBiblioteca.Infra.Repositories
 {

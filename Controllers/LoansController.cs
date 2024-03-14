@@ -6,7 +6,6 @@ using AutoMapper;
 using ApiBiblioteca.Domain.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using ApiBiblioteca.Application.Services;
-using ApiBiblioteca.Infra.Repositories;
 
 namespace ApiBiblioteca.Controllers
 {
@@ -26,6 +25,7 @@ namespace ApiBiblioteca.Controllers
             _tokenService = tokenService;
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -35,6 +35,18 @@ namespace ApiBiblioteca.Controllers
             return Ok(loansDTO);
         }
 
+        [HttpGet("myloans")]
+        public async Task<IActionResult> GetAllMyLoans()
+        {
+            var userId = Guid.Parse(_tokenService.GetIdByToken(HttpContext));
+
+            var loans = await _loanRepository.GetAllByUserId(userId);
+            var loansDTO = loans.Select(l => _mapper.Map<LoanDTO>(l));
+
+            return Ok(loansDTO);
+        }
+
+        [Authorize(Policy = "Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -42,6 +54,23 @@ namespace ApiBiblioteca.Controllers
             var loanDTO = _mapper.Map<LoanDTO>(loan);
 
             return loanDTO == null ? NotFound("Book not found!") : Ok(loanDTO);
+        }
+
+        [HttpGet("myloans/{id}")]
+        public async Task<IActionResult> GetByIdMyLoans(Guid id)
+        {
+            var userId = Guid.Parse(_tokenService.GetIdByToken(HttpContext));
+            
+            var loanExists = await _loanRepository.ExistsLoan(id);
+            if (loanExists == false) return NotFound("Loan not found!");
+
+            var loanIsUser = await _loanRepository.LoanIsUser(userId, id);
+            if (loanIsUser == false) return BadRequest("You are not allowed to access this loan.");
+
+            var loan = await _loanRepository.GetById(id);
+            var loanDTO = _mapper.Map<LoanDTO>(loan);
+
+            return Ok(loanDTO);
         }
 
         [HttpPost]
@@ -57,11 +86,12 @@ namespace ApiBiblioteca.Controllers
             return StatusCode(201, "Loan registered successfully!");
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromBody] LoanViewModel viewModel, Guid id)
         {
-            var loanExists = await _loanRepository.GetById(id);
-            if (loanExists == null) return NotFound("Loan not found!");
+            var loanExists = await _loanRepository.ExistsLoan(id);
+            if (loanExists == false) return NotFound("Loan not found!");
 
             var loan = CreateUtil.LoanCreate(viewModel);
             await _loanRepository.Update(id, loan);
@@ -69,11 +99,12 @@ namespace ApiBiblioteca.Controllers
             return Ok("Loan updated successfully!");
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var loanExists = await _loanRepository.GetById(id);
-            if (loanExists == null) return NotFound("Loan not found!");
+            var loanExists = await _loanRepository.ExistsLoan(id);
+            if (loanExists == false) return NotFound("Loan not found!");
 
             await _loanRepository.Delete(id);
 

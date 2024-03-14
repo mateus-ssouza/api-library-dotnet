@@ -7,5 +7,8 @@
         Task Delete(Guid id);
         Task<ICollection<Loan>> GetAll();
         Task<Loan> GetById(Guid id);
+        Task<bool> LoanIsUser(Guid idUser, Guid idLoan);
+        Task<bool> ExistsLoan(Guid id);
+        Task<ICollection<Loan>> GetAllByUserId(Guid userId);
     }
 }

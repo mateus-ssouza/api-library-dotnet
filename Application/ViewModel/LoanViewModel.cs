@@ -1,6 +1,4 @@
-﻿using ApiBiblioteca.Domain.Enums;
-
-namespace ApiBiblioteca.Application.ViewModel
+﻿namespace ApiBiblioteca.Application.ViewModel
 {
     public class LoanViewModel
     {

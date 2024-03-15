@@ -2,65 +2,57 @@
 using ApiBiblioteca.Domain.Models.Interfaces;
 using ApiBiblioteca.Application.ViewModel;
 using AutoMapper;
-using ApiBiblioteca.Domain.DTOs;
 using ApiBiblioteca.Domain.Models;
+using ApiBiblioteca.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiBiblioteca.Controllers
 {
+    [Authorize]
     [Route("api/v1/users")]
     [ApiController]
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
+        private readonly TokenService _tokenService;
 
-
-        public UsersController(IUserRepository userRepository, IMapper mapper)
+        public UsersController(IUserRepository userRepository, IMapper mapper, TokenService tokenService)
         {
             _userRepository = userRepository;
             _mapper = mapper;
+            _tokenService = tokenService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] UserViewModel viewModel)
         {
-            var users = await _userRepository.GetAll();
-            var usersDTO = users.Select(u => _mapper.Map<UserDTO>(u));
+            var userId = Guid.Parse(_tokenService.GetIdByToken(HttpContext));
 
-            return Ok(usersDTO);
-        }
+            var userExists = await _userRepository.GetById(userId);
+            if (userExists == null) return NotFound("User not registered!");
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var user = await _userRepository.GetById(id);
-            var userDTO = _mapper.Map<UserDTO>(user);
+            var isRegisteredEmail = await _userRepository.IsRegisteredEmail(viewModel.Email);
+            if (isRegisteredEmail && userExists.Email != viewModel.Email) return BadRequest("This email is already in use.");
 
-            return userDTO == null ? NotFound("User not found!") : Ok(userDTO);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Add([FromBody] UserViewModel viewModel)
-        {
             var user = _mapper.Map<User>(viewModel);
-            await _userRepository.Add(user);
+            var passwordHash = CryptographyService.Encrypt(viewModel.Password);
+            user.Password = passwordHash;
 
-            return StatusCode(201, "User registered successfully!");
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] UserViewModel viewModel, Guid id)
-        {
-            var user = _mapper.Map<User>(viewModel);
-            await _userRepository.Update(id, user);
+            await _userRepository.Update(userId, user);
 
             return Ok("User updated successfully!");
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpDelete]
+        public async Task<IActionResult> Delete()
         {
-            await _userRepository.Delete(id);
+            var userId = Guid.Parse(_tokenService.GetIdByToken(HttpContext));
+
+            var userExists = await _userRepository.ExistsUser(userId);
+            if (userExists == false) return NotFound("User not registered!");
+
+            await _userRepository.Delete(userId);
 
             return Ok("User removed successfully!");
         }

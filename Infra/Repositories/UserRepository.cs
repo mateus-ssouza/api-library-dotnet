@@ -16,47 +16,63 @@ namespace ApiBiblioteca.Infra.Repositories
 
         public async Task<ICollection<User>> GetAll()
         {
-            return await _db.Users
+            try
+            {
+                return await _db.Users
                 .Include(u => u.Address)
                 .ToListAsync();
+            }
+            catch (Exception) { throw; } 
         }
 
         public async Task<User> GetById(Guid id)
         {
-            return await _db.Users
+            try
+            {
+                return await _db.Users
                 .Include(u => u.Address)
                 .FirstOrDefaultAsync(u => u.Id == id);
+            }
+            catch (Exception) { throw; }
         }
 
         public async Task<User> GetByEmail(string email)
         {
-            return await _db.Users
+            try
+            {
+                return await _db.Users
                 .Include(u => u.Address)
                 .FirstOrDefaultAsync(u => u.Email == email);
+            }
+            catch (Exception) { throw; }
         }
 
         public async Task<bool> IsRegisteredEmail(string email)
         {
-            return await _db.Users.AnyAsync(u => u.Email == email);
+            try
+            {
+                return await _db.Users.AnyAsync(u => u.Email == email);
+            }
+            catch (Exception) { throw; }
         }
 
         public async Task Add(User model)
         {
-            await _db.Users.AddAsync(model);
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.Users.AddAsync(model);
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception) { throw; }
         }
 
         public async Task Update(Guid id, User model)
         {
             
-            if (!UserExists(id))
-            {
-                // User not found
-                throw new InvalidOperationException("Project not found");
-            }
-            else
+            try
             {
                 var userUpdate = await GetById(id);
+
                 userUpdate.Name = model.Name;
                 userUpdate.Cpf = model.Cpf;
                 userUpdate.Birthday = model.Birthday;
@@ -68,18 +84,27 @@ namespace ApiBiblioteca.Infra.Repositories
                 _db.Users.Update(userUpdate);
                 await _db.SaveChangesAsync();
             }
+            catch (Exception) { throw; }
         }
 
         public async Task Delete(Guid id)
         {
-            var user = await _db.Users.FindAsync(id);
-            _db.Users.Remove(user!);
-            await _db.SaveChangesAsync();
+            try
+            {
+                var user = await _db.Users.FindAsync(id);
+                _db.Users.Remove(user!);
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception) { throw; }
         }
 
-        private bool UserExists(Guid id)
+        public async Task<bool> ExistsUser(Guid id)
         {
-            return _db.Users.Any(e => e.Id == id);
+            try
+            {
+                return await _db.Users.AnyAsync(u => u.Id == id);
+            }
+            catch (Exception) { throw; }
         }
     }
 }

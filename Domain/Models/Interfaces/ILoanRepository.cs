@@ -10,5 +10,7 @@
         Task<bool> LoanIsUser(Guid idUser, Guid idLoan);
         Task<bool> ExistsLoan(Guid id);
         Task<ICollection<Loan>> GetAllByUserId(Guid userId);
+        Task Validate(Guid id);
+        Task Finalize(Guid id);
     }
 }

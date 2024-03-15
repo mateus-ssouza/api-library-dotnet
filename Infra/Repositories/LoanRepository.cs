@@ -1,4 +1,5 @@
-﻿using ApiBiblioteca.Domain.Models;
+﻿using ApiBiblioteca.Domain.Enums;
+using ApiBiblioteca.Domain.Models;
 using ApiBiblioteca.Domain.Models.Interfaces;
 using ApiBiblioteca.Infra.Data;
 using Microsoft.EntityFrameworkCore;
@@ -147,6 +148,50 @@ namespace ApiBiblioteca.Infra.Repositories
                 transaction.Rollback();
                 throw;
             }
+        }
+
+        public async Task Validate(Guid id)
+        {
+            try
+            {
+                var loanValidate = await GetById(id);
+                
+                if (loanValidate.LoanDate < DateTime.Today)
+                {
+                    var differenceInDays = (loanValidate.ReturnDate - loanValidate.LoanDate).Days;
+                    loanValidate.LoanDate = DateTime.Today;
+                    loanValidate.ReturnDate = DateTime.Today.AddDays(differenceInDays);
+                }
+
+                loanValidate.Status = Status.InProgress;
+                _db.Loans.Update(loanValidate);
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception) { throw; }
+        }
+
+        public async Task Finalize(Guid id)
+        {
+            try
+            {
+                var loanFinalize = await GetById(id);
+
+                var differenceInDays = (DateTime.Today - loanFinalize.ReturnDate).Days;
+                if (differenceInDays > 0)
+                {
+                    loanFinalize.Fines = differenceInDays * 0.3;
+                }
+
+                foreach (var copyLoan in loanFinalize.BookLendings)
+                {
+                    copyLoan.Copy.Available = true;
+                }
+
+                loanFinalize.Status = Status.Finished;
+                _db.Loans.Update(loanFinalize);
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception) { throw; }
         }
 
         public async Task<bool> LoanIsUser(Guid idUser, Guid idLoan)

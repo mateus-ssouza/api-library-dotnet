@@ -110,5 +110,29 @@ namespace ApiBiblioteca.Controllers
 
             return Ok("Loan removed successfully!");
         }
+
+        [Authorize(Policy = "Admin")]
+        [HttpPut("{id}/validate")]
+        public async Task<IActionResult> Validate(Guid id)
+        {
+            var loanExists = await _loanRepository.ExistsLoan(id);
+            if (loanExists == false) return NotFound("Loan not found!");
+
+            await _loanRepository.Validate(id);
+
+            return Ok("Loan successfully validated!");
+        }
+
+        [Authorize(Policy = "Admin")]
+        [HttpPut("{id}/finalize")]
+        public async Task<IActionResult> Finalize(Guid id)
+        {
+            var loanExists = await _loanRepository.ExistsLoan(id);
+            if (loanExists == false) return NotFound("Loan not found!");
+
+            await _loanRepository.Finalize(id);
+
+            return Ok("Loan successfully finalized!");
+        }
     }
 }
